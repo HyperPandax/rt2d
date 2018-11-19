@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "myscene.h"
+#include "block.h"
 
 MyScene::MyScene() : Scene()
 {
@@ -17,11 +18,14 @@ MyScene::MyScene() : Scene()
 	// create a single instance of MyEntity in the middle of the screen.
 	// the Sprite is added in Constructor of MyEntity.
 	myentity = new MyEntity();
-	myentity->position = Point2(SWIDTH/2, SHEIGHT/2);
+	myentity->position = Point2(SWIDTH/2, SHEIGHT/12*11);
+	myentity->scale = Point(0.5f, 0.1f);
 
+	block = new Block();
 	// create the scene 'tree'
 	// add myentity to this Scene as a child.
 	this->addChild(myentity);
+	
 }
 
 
@@ -60,5 +64,16 @@ void MyScene::update(float deltaTime)
 		RGBAColor color = myentity->sprite()->color;
 		myentity->sprite()->color = Color::rotate(color, 0.01f);
 		t.start();
+	}
+
+	// ###############################################################
+	// Move it
+	// ###############################################################
+	if (input()->getKey(KeyCode::Left)) {
+		myentity->position.x -=2;
+		
+	}
+	if (input()->getKey(KeyCode::Right)) {
+		myentity->position.x += 2;
 	}
 }

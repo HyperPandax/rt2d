@@ -170,11 +170,13 @@ ENDIF()
 ####################################################################
 IF(MAKE_BREAKOUT)
 	add_executable(breakout
-		start/main.cpp
-		start/myentity.cpp
-		start/myentity.h
-		start/myscene.cpp
-		start/myscene.h
+		breakout/main.cpp
+		breakout/myentity.cpp
+		breakout/myentity.h
+		breakout/myscene.cpp
+		breakout/myscene.h
+		breakout/block.cpp
+		breakout/block.h
 	)
 	target_link_libraries(breakout
 		${ALL_GRAPHICS_LIBS}
