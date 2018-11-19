@@ -5,6 +5,7 @@ project (rt2d)
 # delete CMakeCache.txt from the build directory when you edit these options
 ####################################################################
 OPTION(MAKE_START "Make RT2D start application" ON)
+OPTION(MAKE_BREAKOUT "Make Breakout application" ON)
 OPTION(MAKE_DEMO "Make RT2D demo (tests) application" ON)
 OPTION(MAKE_CANVAS_DEMO "Make RT2D Canvas demo (tests) application" ON)
 OPTION(MAKE_FLOCKING "Make flocking application" ON)
@@ -163,6 +164,28 @@ IF(MAKE_START)
 		DESTINATION ${CMAKE_BINARY_DIR}
 	)
 ENDIF()
+
+####################################################################
+# rainbow breakout                                                 #
+####################################################################
+IF(MAKE_BREAKOUT)
+	add_executable(breakout
+		start/main.cpp
+		start/myentity.cpp
+		start/myentity.h
+		start/myscene.cpp
+		start/myscene.h
+	)
+	target_link_libraries(breakout
+		${ALL_GRAPHICS_LIBS}
+	)
+	# Copy assets to the build directory
+	file(
+		COPY start/assets
+		DESTINATION ${CMAKE_BINARY_DIR}
+	)
+ENDIF()
+
 
 ####################################################################
 # demo                                                             #
