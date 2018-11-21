@@ -1,15 +1,15 @@
 /**
- * Copyright 2015 Your Name <you@yourhost.com>
+ * Copyright 2018 Lisanne Reilman <lnreilman.nl>
  *
  * @brief Description of My Awesome Game.
  *
  * @file main.cpp
  *
- * @mainpage My Awesome Game
+ * @mainpage Rainbow Breakout
  *
  * @section intro Introduction
  *
- * Detailed description of My Awesome Game.
+ * Detailed description of Rainbow Breakout.
  *
  * There's even a second paragraph.
  */

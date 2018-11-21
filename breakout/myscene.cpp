@@ -14,26 +14,23 @@ MyScene::MyScene() : Scene()
 {
 	// start the timer.
 	t.start();
-
+	Block brickBlocks[7]{ };
 	spawnBlocks();
-
+	
 	// create a single instance of MyEntity in the middle of the screen.
 	// the Sprite is added in Constructor of MyEntity.
 	myentity = new MyEntity();
 	myentity->position = Point2(SWIDTH / 2, SHEIGHT / 12 * 11);
 	myentity->scale = Point(0.5f, 0.1f);
 
+
 	
 	// create the scene 'tree'
 	// add myentity to this Scene as a child.
+
 	this->addChild(myentity);
-	this->addChild(block1);
-	this->addChild(block2);
-	this->addChild(block3);
-	this->addChild(block4);
-	this->addChild(block5);
-	this->addChild(block6);
-	this->addChild(block7);
+	
+	
 }
 
 
@@ -87,10 +84,20 @@ void MyScene::update(float deltaTime)
 }
 
 void MyScene::spawnBlocks() {
-	block1 = new Block();
-	block1->position = Point2(SWIDTH / 12 * 3, SHEIGHT / 12 * 1);
-	block1->scale = Point(0.5f, 0.1f);
-	block2 = new Block();
+	for (int i = 0; i < 9; i++) {
+		block1 = new Block();
+		block1->position = Point2(SWIDTH / 12 * (2 + i), SHEIGHT / 12 * 1);
+		block1->scale = Point(0.5f, 0.1f);
+		this->addChild(block1);
+
+		//brickBlocks[i] = block1;
+		//this->addChild(brickBlocks[i]);	
+	}
+	
+	
+	
+	
+	/*block2 = new Block();
 	block2->position = Point2(SWIDTH / 12 * 4, SHEIGHT / 12 * 1);
 	block2->scale = Point(0.5f, 0.1f);
 	block3 = new Block();
@@ -107,5 +114,5 @@ void MyScene::spawnBlocks() {
 	block6->scale = Point(0.5f, 0.1f);
 	block7 = new Block();
 	block7->position = Point2(SWIDTH / 12 * 9, SHEIGHT / 12 * 1);
-	block7->scale = Point(0.5f, 0.1f);
+	block7->scale = Point(0.5f, 0.1f);*/
 }

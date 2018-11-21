@@ -32,6 +32,7 @@ public:
 private:
 	/// @brief the rotating square in the middle of the screen
 	MyEntity* myentity;
+	Block* brickBlocks;
 	Block* block1;
 	Block* block2;
 	Block* block3;
