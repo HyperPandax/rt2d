@@ -9,6 +9,7 @@
 
 #include "myscene.h"
 #include "block.h"
+#include "star.h"
 
 MyScene::MyScene() : Scene()
 {
@@ -23,13 +24,15 @@ MyScene::MyScene() : Scene()
 	myentity->position = Point2(SWIDTH / 2, SHEIGHT / 12 * 11);
 	myentity->scale = Point(0.5f, 0.1f);
 
-
+	mystar = new Star();
+	mystar->position = Point2(SWIDTH / 2, SHEIGHT / 12 * 10);
+	mystar->scale = Point(2.0f, 2.0f);
 	
 	// create the scene 'tree'
 	// add myentity to this Scene as a child.
 
 	this->addChild(myentity);
-	
+	this->addChild(mystar);
 	
 }
 
@@ -38,9 +41,11 @@ MyScene::~MyScene()
 {
 	// deconstruct and delete the Tree
 	this->removeChild(myentity);
+	this->removeChild(mystar);
 
 	// delete myentity from the heap (there was a 'new' in the constructor)
 	delete myentity;
+	delete mystar;
 }
 
 void MyScene::update(float deltaTime)

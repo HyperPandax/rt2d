@@ -13,6 +13,7 @@
 
 #include "myentity.h"
 #include "block.h"
+#include "star.h"
 
 /// @brief The MyScene class is the Scene implementation.
 class MyScene : public Scene
@@ -32,6 +33,7 @@ public:
 private:
 	/// @brief the rotating square in the middle of the screen
 	MyEntity* myentity;
+	Star* mystar;
 	Block* brickBlocks;
 	Block* block1;
 	Block* block2;
