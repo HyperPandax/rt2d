@@ -9,8 +9,8 @@
 
 Star::Star() : Entity()
 {
-	this->addSprite("assets/star.tga");
-	this->sprite()->color = RED;
+	this->addSprite("assets/dot.tga");
+	
 
 }
 

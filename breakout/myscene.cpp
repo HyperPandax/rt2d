@@ -26,8 +26,10 @@ MyScene::MyScene() : Scene()
 
 	mystar = new Star();
 	mystar->position = Point2(SWIDTH / 2, SHEIGHT / 12 * 10);
-	mystar->scale = Point(2.0f, 2.0f);
+	mystar->scale = Point(0.6f, 0.6f);
 	
+	std::cout << SWIDTH << std::endl;
+
 	// create the scene 'tree'
 	// add myentity to this Scene as a child.
 
@@ -64,6 +66,7 @@ void MyScene::update(float deltaTime)
 		RGBAColor color = myentity->sprite()->color;
 		myentity->sprite()->color = Color::rotate(color, 0.01f);
 		t.start();
+		
 	}
 	//only 1 timer works at the same time bc it resets
 	/*if (t.seconds() > 0.0333f) {
@@ -98,9 +101,7 @@ void MyScene::spawnBlocks() {
 		//brickBlocks[i] = block1;
 		//this->addChild(brickBlocks[i]);	
 	}
-	
-	
-	
+
 	
 	/*block2 = new Block();
 	block2->position = Point2(SWIDTH / 12 * 4, SHEIGHT / 12 * 1);

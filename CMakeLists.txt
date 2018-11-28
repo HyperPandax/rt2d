@@ -185,7 +185,7 @@ IF(MAKE_BREAKOUT)
 	)
 	# Copy assets to the build directory
 	file(
-		COPY start/assets
+		COPY breakout/assets
 		DESTINATION ${CMAKE_BINARY_DIR}
 	)
 ENDIF()
