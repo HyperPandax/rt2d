@@ -25,10 +25,8 @@ MyScene::MyScene() : Scene()
 	myentity->scale = Point(0.5f, 0.1f);
 
 	mystar = new Star();
-	mystar->position = Point2(SWIDTH / 2, SHEIGHT / 12 * 10);
 	mystar->scale = Point(0.6f, 0.6f);
 	
-	std::cout << SWIDTH << std::endl;
 
 	// create the scene 'tree'
 	// add myentity to this Scene as a child.

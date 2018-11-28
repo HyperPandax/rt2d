@@ -24,9 +24,12 @@ public:
 	/// @param deltaTime the elapsed time in seconds
 	/// @return void
 	virtual void update(float deltaTime);
+	virtual void bounce();
 
 private:
 	/* add your private declarations */
+	Vector2 velocity;
+	Vector2 startPosition;
 };
 
 #endif /* STAR_H */
