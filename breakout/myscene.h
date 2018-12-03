@@ -29,19 +29,23 @@ public:
 	/// @return void
 	virtual void update(float deltaTime);
 	virtual void spawnBlocks();
+	virtual void bouncePlatform();
+	virtual void erase();
+
+	bool AABB(Star* A, Block* B);
+	bool AABC(Star* A, MyEntity* B);
 
 private:
 	/// @brief the rotating square in the middle of the screen
 	MyEntity* myentity;
 	Star* mystar;
-	Block* brickBlocks;
-	Block* block1;
-	Block* block2;
-	Block* block3;
-	Block* block4;
-	Block* block5;
-	Block* block6;
-	Block* block7;
+	std::vector<Block*> blocks;
+	Block* b;
+	int posa;
+	int posb;
+
+	int toTurn;
+	
 	/// @brief a Timer to rotate the color every n seconds
 	Timer t;
 };

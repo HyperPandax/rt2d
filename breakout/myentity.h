@@ -25,6 +25,11 @@ public:
 	/// @return void
 	virtual void update(float deltaTime);
 
+	int x;
+	int y;
+	int totalwidth;
+	int totalheight;
+
 private:
 	/* add your private declarations */
 };

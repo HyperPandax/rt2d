@@ -25,6 +25,13 @@ public:
 	/// @return void
 	virtual void update(float deltaTime);
 	virtual void bounce();
+	virtual void turny();
+	virtual void turnx();
+
+	int x;
+	int y;
+	int totalwidth;
+	int totalheight;
 
 private:
 	/* add your private declarations */

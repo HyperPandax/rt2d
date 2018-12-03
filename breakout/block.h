@@ -24,10 +24,17 @@ public:
 	/// @param deltaTime the elapsed time in seconds
 	/// @return void
 	virtual void update(float deltaTime);
+	int x;
+	int y;
+	int totalwidth;
+	int totalheight;
+
+	int toErase;
 
 private:
-	/* add your private declarations */
-};
+	
+}
 
 #endif /* BLOCK_H */
 
+;
