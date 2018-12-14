@@ -30,12 +30,18 @@ public:
 
 	int x;
 	int y;
+	int r;
 	int totalwidth;
 	int totalheight;
 
+	bool paused;
+
+	int hearts;
+	Vector2 velocity;
+
 private:
 	/* add your private declarations */
-	Vector2 velocity;
+	
 	Vector2 startPosition;
 };
 

@@ -29,12 +29,12 @@ public:
 	/// @return void
 	virtual void update(float deltaTime);
 	virtual void spawnBlocks();
-	virtual void bouncePlatform();
 	virtual void erase();
 
-	bool AABB(Star* A, Block* B);
-	bool AABC(Star* A, MyEntity* B);
+	virtual bool AABB(Star* A, Block* B);
+	virtual bool AABC(Star* A, MyEntity* B);
 
+	
 private:
 	/// @brief the rotating square in the middle of the screen
 	MyEntity* myentity;
@@ -45,9 +45,18 @@ private:
 	int posb;
 
 	int toTurn;
-	
+
+	bool paused;
+	//Vector2 vel;
+
+
+	Star* star1;
+	Star* star2;
+	Star* star3;
 	/// @brief a Timer to rotate the color every n seconds
 	Timer t;
+
+	
 };
 
 #endif /* SCENE00_H */

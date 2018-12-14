@@ -12,31 +12,65 @@
 #include "block.h"
 #include "star.h"
 
+
+
 MyScene::MyScene() : Scene()
 {
+	
 	// start the timer.
 	t.start();
 	
-	
+	//vel = Vector2(-250, -200);
+
 	// create a single instance of MyEntity in the middle of the screen.
 	// the Sprite is added in Constructor of MyEntity.
 	myentity = new MyEntity();
 	myentity->position = Point2(SWIDTH / 2, 700);
 	myentity->scale = Point(1.0f, 0.1f);
 
+	//mystar instance
 	mystar = new Star();
+	mystar->hearts = 3;
+	//mystar->velocity = Vector2(0, 0);
+	std::cout << mystar->hearts << std::endl;
+	
 
-	//block1 = new Block();
+	//lives
+	star1 = new Star();
+	star2 = new Star();
+	star3 = new Star();
+
+	star1->position = Point2(SWIDTH / 40 * 1, SHEIGHT / 20 * 19);
+	star2->position = Point2(SWIDTH / 40 * 2, SHEIGHT / 20 * 19);
+	star3->position = Point2(SWIDTH / 40 * 3, SHEIGHT / 20 * 19);
+	star1->velocity = Vector2(0, 0);
+	star2->velocity = Vector2(0, 0); 
+	star3->velocity = Vector2(0, 0);
+	star1->scale = Point(0.08f, 0.08f);
+	star2->scale = Point(0.08f, 0.08f);
+	star3->scale = Point(0.08f, 0.08f);
+	star2->sprite()->color = ORANGE;
+	star3->sprite()->color = YELLOW;
+	
+
+
+	//vector of blocks
 	blocks = std::vector<Block*>();
+	//spawn the blocks
 	spawnBlocks();
 
 	this->toTurn = 0;
+
 	// create the scene 'tree'
-	// add myentity to this Scene as a child.
+	// add myentity & mystar to this Scene as a child.
+	this->addChild(star1);
+	this->addChild(star2);
+	this->addChild(star3);
 
 	this->addChild(myentity);
 	this->addChild(mystar);
-	
+
+	this->paused = false;
 }
 
 
@@ -45,25 +79,37 @@ MyScene::~MyScene()
 	// deconstruct and delete the Tree
 	this->removeChild(myentity);
 	this->removeChild(mystar);
+	this->removeChild(star1);
+	this->removeChild(star2);
+	this->removeChild(star3);
 
-	// delete myentity from the heap (there was a 'new' in the constructor)
+	// delete myentity & mystar from the heap (there was a 'new' in the constructor)
 	delete myentity;
 	delete mystar;
+	delete star1;
+	delete star2;
+	delete star3;
 }
 
 void MyScene::update(float deltaTime)
 {
-
-	// ###############################################################
-	// Escape key stops the Scene
-	// ###############################################################
+	
+	//press esc pauses scene toggle
 	if (input()->getKeyUp(KeyCode::Escape)) {
-		this->stop();
+		if (!this->paused) {
+			this->paused = true;
+
+		}
+		else {
+			this->paused = false;
+		}
 	}
 
-	// ###############################################################
-	// Rotate color
-	// ###############################################################
+	if (this->paused) {
+		return;
+	}
+	
+	//rotation color star & platform
 	if (t.seconds() > 0.0333f) {
 		RGBAColor color = myentity->sprite()->color;
 		myentity->sprite()->color = Color::rotate(color, 0.01f);
@@ -73,10 +119,8 @@ void MyScene::update(float deltaTime)
 		t.start();
 
 	}
-	// ###############################################################
-	// move it
-	// ###############################################################
-	
+
+	//movement platform
 	if (myentity->position.x >= 64 && myentity->position.x <= 1216) {
 		if (input()->getKey(KeyCode::Left)) {
 			if (input()->getKey(KeyCode::LeftShift)) {
@@ -90,54 +134,55 @@ void MyScene::update(float deltaTime)
 			}
 			myentity->position.x += 300 * deltaTime;
 		}
-		/*
-		*/
 	}
+	
+	//makes sure the platform doesn't get stuck on the sides
 	if (myentity->position.x <= 64 ) {
 		myentity->position.x += 10;
 	}
 	if (myentity->position.x >= 1216) {
 		myentity->position.x -= 10;
 	}
-	/*this->posa = myentity->position.x - 64;
-	this->posb = myentity->position.x + 64;*/
 
-
-	bouncePlatform();
-
+	//erase blocks who are hit
 	erase();
 
+	//if star hits platform bounce
 	if (AABC(this->mystar, this->myentity)) {
 		this->mystar->turny();
 		mystar->position.y -= 10;
 
 
 	}
+
+	//if star hits block bounce and toErase to 1
 	for (int i = 0; i < blocks.size(); i++) {
-		if (AABB(this->mystar, this->blocks[i])) {
-			std::cout << "works!" << std::endl;
-			if (this->toTurn == 1) {
-				mystar->turnx();
-			}
-			if (this->toTurn == 2) {
-				mystar->turny();
-			}
+		if (AABB(this->mystar, this->blocks[i])) {			
 			b = blocks[i];
 			b->toErase = 1;
-		
-			/*removeChild(b);
-			delete(b);*/
-			
-			//this->mystar->turnx();
-			//this->mystar->turny();
-			
-			/*b = blocks[0];
-			removeChild(b);
-			delete(b);
-			b = blocks.erase(b);*/
 		}
 	}
+	
+	if (this->toTurn == 2) {
+		mystar->turny();
+		toTurn = 0;
+	}
+	
+	
 
+	//game paused when u die
+	if (mystar->hearts <= 0) {
+		
+		mystar->velocity = Vector2(0, 0);
+		this->removeChild(star1);
+		std::cout << "Game Over" << std::endl;
+	}
+	if (mystar->hearts <= 2) {
+		this->removeChild(star3);
+	}
+	if (mystar->hearts <= 1) {
+		this->removeChild(star2);
+	}
 }
 
 void MyScene::spawnBlocks() {
@@ -177,67 +222,9 @@ void MyScene::spawnBlocks() {
 			b->scale = Point(0.7f, 0.2f);
 			this->addChild(b);
 			blocks.push_back(b);
-		}
-
-		
+		}		
 	}
 }
-
-void MyScene::bouncePlatform() {
-	//std::cout << "NEE" << std::endl;
-
-	//std::cout << this->posa + this->posb << std::endl;
-
-	/*if (mystar->position.x >= this->posa && mystar->position.x <= this->posb && mystar->position.y > 580 && mystar->position.y < 620) {
-		//mystar->velocity.y = mystar->velocity.y * -1;
-		mystar->turn();
-		//std::cout << "haaaaaaai" << std::endl;
-	}*/
-	/*for (int i = 0; i < blocks.size; ) {
-		if(mystar->position.x <= blocks[i]->posR){
-			if (mystar->position.x >= blocks[i]->posL) {
-				if (mystar->position.y >= blocks[i]->posT) {
-					if (mystar->position.y <= blocks[i]->posB) {
-						std::cout << "works!" << std::endl;
-					}
-				}
-			}
-		}
-		i++;
-	}*/
-
-
-	/*for (auto it = blocks.begin(); it != blocks.end();) {
-		// how to collide
-		if(mystar->position.x <= (*it)->posR){
-			if (mystar->position.x >= (*it)->posL) {
-				if (mystar->position.y >= (*it)->posT) {
-					if (mystar->position.y <= (*it)->posB) {
-						removeChild(*it);
-						delete(*it);
-						it = blocks.erase(it);
-					}
-				}
-			}
-		}
-		++it;
-	}*/  
-
-
-	/*for (int i = 0; i > blocks.size; i++) {
-		//blocks[i];
-
-	}*/
-	/*if (mystar->position.x >= this->posL && 
-		mystar->position.x <= this->posR && 
-		mystar->position.y >= this->posT && 
-		mystar->position.y <= this->posB) {
-		
-		mystar->turn();
-	}*/
-
-}
-
 
 bool MyScene::AABB(Star* A, Block* B) {
 	if (A->x + A->totalwidth >= B->x &&
@@ -245,20 +232,15 @@ bool MyScene::AABB(Star* A, Block* B) {
 		A->y + A->totalheight >= B->y &&
 		B->y + B->totalheight >= A->y
 		) {
-		if (A->x + A->totalwidth >= B->x && 
-			B->x + B->totalwidth >= A->x) {
-			this->toTurn = 1;
-		}
-		if (A->y + A->totalheight >= B->y &&
-			B->y + B->totalheight >= A->y) {
-			this->toTurn = 2;
-		}
+		this->toTurn = 2;
+		
 		return true;
 	}
 	else {
 		return false;
 	}
 }
+
 bool MyScene::AABC(Star* A, MyEntity* B) {
 	if (A->x + A->totalwidth >= B->x &&
 		B->x + B->totalwidth >= A->x &&
@@ -285,3 +267,4 @@ void MyScene::erase() {
 		
 	}
 }
+
