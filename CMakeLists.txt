@@ -179,6 +179,8 @@ IF(MAKE_BREAKOUT)
 		breakout/block.h
 		breakout/star.cpp
 		breakout/star.h
+		breakout/bonus.cpp
+		breakout/bonus.h
 	)
 	target_link_libraries(breakout
 		${ALL_GRAPHICS_LIBS}

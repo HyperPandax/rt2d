@@ -29,6 +29,9 @@ public:
 	int totalwidth;
 	int totalheight;
 
+	int hasbonus;
+	int num;
+
 	int toErase;
 
 private:

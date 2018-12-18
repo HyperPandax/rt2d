@@ -12,6 +12,7 @@ Block::Block() : Entity()
 	this->sprite()->color = RED;
 
 	this->toErase = 0;
+	hasbonus = 100;
 }
 
 Block::~Block()

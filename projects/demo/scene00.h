@@ -24,6 +24,7 @@ public:
 private:
 	BasicEntity* consolecontainer;
 	std::vector<Text*> consoletext;
+
 	std::deque<std::string> fulltext;
 	unsigned int numlines;
 	Timer t;

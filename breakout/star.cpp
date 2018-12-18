@@ -72,8 +72,8 @@ void Star::bounce() {
 
 	if(this->position.y > SHEIGHT -15) {
 		this->velocity.y = this->velocity.y * -1;
-		this->position = startPosition;
-		this->hearts-=1;
+		//this->position = startPosition;
+		//this->hearts-=1;
 	}
 
 }
