@@ -71,10 +71,12 @@ private:
 	/// @brief a Timer to rotate the color every n seconds
 	Timer t;
 
+	//timers bonus
+	Timer ax;
+	Timer bx;
+	Timer cx;
+	Timer dx;
 
-	float bonusTimer = 0;
-	int bb;
-	
 };
 
 #endif /* SCENE00_H */

@@ -34,7 +34,8 @@ public:
 	int totalwidth;
 	int totalheight;
 	Vector2 velocity;
-	
+
+	Vector2 startPosition;
 
 	int hearts;
 	
@@ -42,7 +43,7 @@ public:
 private:
 	/* add your private declarations */
 	bool paused;
-	Vector2 startPosition;
+	
 };
 
 #endif /* STAR_H */

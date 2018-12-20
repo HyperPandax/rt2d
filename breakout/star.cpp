@@ -43,7 +43,6 @@ void Star::update(float deltaTime)
 		return;
 	}
 
-
 	this->totalwidth = this->scale.x * this->sprite()->width() ;
 	this->totalheight = this->scale.y * this->sprite()->width();
 	this->x = this->position.x - (totalwidth / 2);
@@ -52,14 +51,7 @@ void Star::update(float deltaTime)
 	this->r = totalwidth / 2;
 
 	this->position += this->velocity * deltaTime;
-	//std::cout << this->position << std::endl;
 	bounce();
-	//std::cout << velocity << std::endl;
-	
-	/*if (this->hearts == 0) {
-		this->velocity = Vector2(-250.0, -200.0);
-	}*/
-
 }
 
 void Star::bounce() {
@@ -72,19 +64,14 @@ void Star::bounce() {
 
 	if(this->position.y > SHEIGHT -15) {
 		this->velocity.y = this->velocity.y * -1;
-		//this->position = startPosition;
-		//this->hearts-=1;
+		this->position = startPosition;
+		this->hearts-=1;
 	}
-
 }
 
 void Star::turny() {
-
 	this->velocity.y = this->velocity.y * -1;
-	
 }
 void Star::turnx() {
-
 	this->velocity.x = this->velocity.x * -1;
-	
 }

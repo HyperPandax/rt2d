@@ -1,7 +1,7 @@
 /**
  * This class describes MyScene behavior.
  *
- * Copyright 2015 Your Name <you@yourhost.com>
+ * Copyright 2018 Lisanne <lnreilman.nl>
  */
 
  // #include
@@ -35,7 +35,7 @@ MyScene::MyScene() : Scene()
 
 	//mystar
 	mystar = new Star();
-	mystar->hearts = 3;
+	mystar->hearts = 4;
 	//mystar->velocity = Vector2(0, 0);
 	std::cout << "hearts:" << mystar->hearts << std::endl;
 	
@@ -117,24 +117,11 @@ MyScene::~MyScene()
 //======================================================================
 void MyScene::update(float deltaTime)
 {
-	//bonusTimer++;
-	bonusTimer += 1* deltaTime;
-	std::cout << bonusTimer << std::endl;
-	if (bb == 4 ) {
-		bonusTimer = 0;
-		if (bonusTimer >= 3.0f) {
-
-			std::cout << "SCALEEEEE" << std::endl;
-			mystar->scale = Point(0.15f, 0.15f);
-			
-		}
-		bb = 0;
-	}
-
 
 	//------------------------------------------------------------------
 	//							ESC == Pauze
 	//------------------------------------------------------------------
+	
 	if (input()->getKeyUp(KeyCode::Escape)) {
 		if (!this->paused) {
 			this->paused = true;
@@ -150,6 +137,7 @@ void MyScene::update(float deltaTime)
 	//------------------------------------------------------------------
 	//					Rotation color star & platform
 	//------------------------------------------------------------------
+	
 	if (t.seconds() > 0.0333f) {
 		RGBAColor color = myentity->sprite()->color;
 		myentity->sprite()->color = Color::rotate(color, 0.01f);
@@ -162,6 +150,7 @@ void MyScene::update(float deltaTime)
 	//------------------------------------------------------------------
 	//						Movement platform
 	//------------------------------------------------------------------
+	
 	if (myentity->position.x >= 64 && myentity->position.x <= 1216) {
 		if (input()->getKey(KeyCode::Left)) {
 			if (input()->getKey(KeyCode::LeftShift)) {
@@ -180,6 +169,7 @@ void MyScene::update(float deltaTime)
 	//------------------------------------------------------------------
 	//		Makes sure the platform doesn't get stuck on the sides
 	//------------------------------------------------------------------
+	
 	if (myentity->position.x <= 64 ) {
 		myentity->position.x += 10;
 	}
@@ -195,14 +185,20 @@ void MyScene::update(float deltaTime)
 	//------------------------------------------------------------------
 	//					If star hits platform bounce
 	//------------------------------------------------------------------
+	
 	if (AABC(this->mystar, this->myentity)) {
 		this->mystar->turny();
 		mystar->position.y -= 10;
+	}
+	if (AABC(this->mystar2, this->myentity)) {
+		this->mystar2->turny();
+		mystar2->position.y -= 10;
 	}
 
 	//------------------------------------------------------------------
 	//			If star hits block bounce and set block to erase
 	//------------------------------------------------------------------
+	
 	for (int i = 0; i < blocks.size(); i++) {
 		if (AABB(this->mystar, this->blocks[i])) {			
 			b = blocks[i];
@@ -215,11 +211,24 @@ void MyScene::update(float deltaTime)
 				}
 			}
 		}
+		if (AABB(this->mystar2, this->blocks[i])) {
+			b = blocks[i];
+			b->toErase = 1;
+
+			for (int c = 0; c < bonuses.size(); c++) {
+				Bonus* bo = bonuses[c];
+				if (b->num == bo->num) {
+					bo->velocity = Vector2(0, 100);
+				}
+			}
+		}
 	}
+
 	
 	//------------------------------------------------------------------
 	//							turn the star
 	//------------------------------------------------------------------
+	
 	if (this->toTurn == 2) {
 		mystar->turny();
 		toTurn = 0;
@@ -228,7 +237,8 @@ void MyScene::update(float deltaTime)
 	//------------------------------------------------------------------
 	//					collision bonus platform
 	//------------------------------------------------------------------
-		for (int i = 0; i < bonuses.size(); i++) {
+		
+	for (int i = 0; i < bonuses.size(); i++) {
 		if (AABD( this->bonuses[i], this->myentity)) {
 			Bonus* meep = this->bonuses[i];
 			if (meep->sprite()->color == RED) {
@@ -238,51 +248,90 @@ void MyScene::update(float deltaTime)
 				}
 				
 				std::cout << mystar->hearts << std::endl;
-				bb = 0;
 			}	
 			if (meep->sprite()->color == ORANGE) {
 
-				//timer
+				
 				this->myentity->scale = Vector2(2.0f, 0.1f);
-				bb = 1;
+				//timer
+				ax.start();
 			}
 			if (meep->sprite()->color == YELLOW) {
 				
 				this->addChild(mystar2);
-				bb = 2;
+				//timer
+				bx.start();
 			}
 			if (meep->sprite()->color == GREEN) {
-				mystar->velocity.x *= 1.5;
-				mystar->velocity.y *= 1.5;
-				bb = 3;
+				mystar->velocity.x *= 2;
+				mystar->velocity.y *= 2;
+				//timer
+				cx.start();
 			}
 			if (meep->sprite()->color == BLUE) {
 				mystar->scale = Point(0.09f, 0.09f);
-				bb = 4;
+				//timer
+				dx.start();
 			}
 			meep->toErase = 1;
 		}
 	}
+	//timers bonus
+	if (ax.seconds() > 5.0f) {	
+		this->myentity->scale = Vector2(1.0f, 0.1f);
+		ax.stop();
+	}
+	if (bx.seconds() > 5.0f) {
+		this->removeChild(mystar2);
+		mystar2->position = mystar2->startPosition;
+		bx.stop();
+	}
+	if (cx.seconds() > 5.0f) {
+		mystar->velocity.x /= 2;
+		mystar->velocity.y /= 2;
+		cx.stop();
+	}
+	if (dx.seconds() > 5.0f) {
+		mystar->scale = Point(0.15f, 0.15f);
+		dx.stop();
+	}
+
+
+
+
 
 	//------------------------------------------------------------------
 	//					game paused when u die
 	//------------------------------------------------------------------
+	
 	if (mystar->hearts <= 0) {
 			mystar->velocity = Vector2(0, 0);
-			this->removeChild(star1);
+			this->removeChild(mystar);
+
+			//GAME OVER	sprite
 			std::cout << "Game Over" << std::endl;
 	}
-	if (mystar->hearts <= 2) {
+
+	if (mystar->hearts <= 3) {
+		std::cout << "3 LIVES" << std::endl;
 		this->removeChild(star3);
 	}
-	if (mystar->hearts <= 1) {
+	if (mystar->hearts <= 2) {
+		std::cout << "2 LIVES" << std::endl;
 		this->removeChild(star2);
 	}
-	if (mystar->hearts >= 3) {
+	if (mystar->hearts <= 1) {
+		std::cout << "2 LIVES" << std::endl;
+		this->removeChild(star1);
+	}
+	if (mystar->hearts >= 4) {
 		this->addChild(star3);
 	}
-	if (mystar->hearts >= 2) {
+	if (mystar->hearts >= 3) {
 		this->addChild(star2);
+	}
+	if (mystar->hearts >= 2) {
+		this->addChild(star1);
 	}
 		/*if (mystar2->hearts == 0) {
 			this->removeChild(mystar2);
@@ -340,7 +389,7 @@ void MyScene::spawnBlocks() {
 			this->addChild(b);
 			blocks.push_back(b);
 
-			int num = i;
+			/*int num = i;
 			std::string s = std::to_string(num);
 			Text* numt = new Text();
 			numt->scale = Point2(0.35f, 0.35f);
@@ -348,7 +397,7 @@ void MyScene::spawnBlocks() {
 			numt->message( s , RED);
 
 			blockNr.push_back(numt);
-			addChild(numt);
+			addChild(numt);*/
 
 		}if (i <= 21 && i > 10) {
 			Block* b = new Block();
@@ -358,7 +407,7 @@ void MyScene::spawnBlocks() {
 			this->addChild(b);
 			blocks.push_back(b);
 
-			int num = i;
+			/*int num = i;
 			std::string s = std::to_string(num);
 			Text* numt = new Text();
 			numt->scale = Point2(0.35f, 0.35f);
@@ -366,7 +415,7 @@ void MyScene::spawnBlocks() {
 			numt->message(s, ORANGE);
 
 			blockNr.push_back(numt);
-			addChild(numt);
+			addChild(numt);*/
 
 		}if (i <= 32 && i > 21) {
 			Block* b = new Block();
@@ -376,7 +425,7 @@ void MyScene::spawnBlocks() {
 			this->addChild(b);
 			blocks.push_back(b);
 
-			int num = i;
+			/*int num = i;
 			std::string s = std::to_string(num);
 			Text* numt = new Text();
 			numt->scale = Point2(0.35f, 0.35f);
@@ -384,7 +433,7 @@ void MyScene::spawnBlocks() {
 			numt->message(s, YELLOW);
 
 			blockNr.push_back(numt);
-			addChild(numt);
+			addChild(numt);*/
 
 		}if (i <= 43 && i > 32) {
 			Block* b = new Block();
@@ -394,7 +443,7 @@ void MyScene::spawnBlocks() {
 			this->addChild(b);
 			blocks.push_back(b);
 
-			int num = i;
+			/*int num = i;
 			std::string s = std::to_string(num);
 			Text* numt = new Text();
 			numt->scale = Point2(0.35f, 0.35f);
@@ -402,7 +451,7 @@ void MyScene::spawnBlocks() {
 			numt->message(s, GREEN);
 
 			blockNr.push_back(numt);
-			addChild(numt);
+			addChild(numt);*/
 
 		}if (i <= 55 && i > 43) {
 			Block* b = new Block();
@@ -412,7 +461,7 @@ void MyScene::spawnBlocks() {
 			this->addChild(b);
 			blocks.push_back(b);
 
-			int num = i;
+			/*int num = i;
 			std::string s = std::to_string(num);
 			Text* numt = new Text();
 			numt->scale = Point2(0.35f, 0.35f);
@@ -420,7 +469,7 @@ void MyScene::spawnBlocks() {
 			numt->message(s, BLUE);
 
 			blockNr.push_back(numt);
-			addChild(numt);
+			addChild(numt);*/
 		}		
 	}
 }
@@ -497,12 +546,10 @@ void MyScene::giveBonus() {
 	//gen random num between 0 and blocks.size
 	
 	std::srand((unsigned)time(nullptr));
-	for (int i = 0; i < 1; i++) {
-	//for (int i = 0; i < 10; i++) {
+	//for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 20; i++) {
 		int size = blocks.size();
-		int r = 45; // std::rand() % size;
-
-		
+		int r =std::rand() % size; // 45;   
 
 		Bonus* bs = new Bonus();
 		bs->position = blocks[r]->position;
@@ -510,8 +557,8 @@ void MyScene::giveBonus() {
 		bs->num = r;
 		bonuses.push_back(bs);
 		addChild(bs);
-		
-		int color = 4; // std::rand() % 5;
+
+		int color = std::rand() % 5; //2;
 		
 		std::cout << color << std::endl;
 		
@@ -527,36 +574,8 @@ void MyScene::giveBonus() {
 			bs->sprite()->color = BLUE;
 		}
 		
-		
-
-
 		//if 2 nums the same
 
 		std::cout <<"bs.num " << bs->num << " blocks[r].num "<< blocks[r]->num << std::endl;
 	}
-
-
-	/*std::srand((unsigned)time(nullptr));
-	for (size_t i = 0; i < 9; i++) {
-		int size = blocks.size();
-		int r = std::rand() % size;
-	
-		blocks[r]->hasbonus = i;
-		std::cout << "blocknr: " << r << " hasbonus: " << blocks[r]->hasbonus << " position: " <<blocks[r]->position << std::endl;
-
-		Bonus* bs = new Bonus();
-		bs->position = blocks[r]->position;
-		bs->num = r;
-		bonuses.push_back(bs);
-		addChild(bs);
-
-		std::cout << "num bonusz(r): " << bs->num << " position: " << bs->position << std::endl;
-	}*/
-		
-	// choose bonus type
-
-	// if bonus collides platform do bonus
-
-	//if bonus hits platform
-	//if (AABD())
 }

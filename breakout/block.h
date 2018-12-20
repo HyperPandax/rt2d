@@ -29,7 +29,7 @@ public:
 	int totalwidth;
 	int totalheight;
 
-	int hasbonus;
+	bool hasbonus;
 	int num;
 
 	int toErase;
