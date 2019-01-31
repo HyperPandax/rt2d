@@ -30,8 +30,27 @@ public:
 	int totalwidth;
 	int totalheight;
 
+	Vector2 startPosition;
+
+
+	
+
+	Point2 deg1;
+	Point2 deg2;
+	Point2 deg3;
+	Point2 deg4;
+	Point2 deg5;
+	Point2 deg6;
+	Point2 deg7;
+	Point2 deg8;
+	Point2 deg9;
+	Point2 deg10;
+	Point2 deg11;
+	Point2 deg12;
+
 private:
 	/* add your private declarations */
+	
 };
 
 #endif /* MYENTITY_H */

@@ -32,6 +32,8 @@ public:
 	virtual void update(float deltaTime);
 	virtual void spawnBlocks();
 	virtual void erase();
+	void checkAmountBlocks();
+
 
 	virtual bool AABB(Star* A, Block* B);
 	virtual bool AABC(Star* A, MyEntity* B);
@@ -44,6 +46,10 @@ private:
 	MyEntity* myentity;
 	Star* mystar;
 	Star* mystar2;
+
+	Star* pausede;
+	Star* dead;
+	Star* won;
 
 	std::vector<Block*> blocks;
 	Block* b;
@@ -60,8 +66,11 @@ private:
 	int toTurn;
 
 	bool paused;
+	bool finishedD;
+	bool finishedW;
 	//Vector2 vel;
 
+	int blocksSize;
 	
 
 	Star* star1;
@@ -77,6 +86,8 @@ private:
 	Timer cx;
 	Timer dx;
 
+	//bool paused;
+	bool gameOver;
 };
 
 #endif /* SCENE00_H */

@@ -24,22 +24,41 @@ MyScene::MyScene() : Scene()
 	//						Start the timer.
 	//------------------------------------------------------------------
 	t.start();
+	gameOver = false;
 
 	//------------------------------------------------------------------
 	//							Instances
 	//------------------------------------------------------------------
+	//paused text
+	pausede = new Star();
+	pausede->addSprite("assets/paused.tga");
+	pausede->position = Point2(SWIDTH / 2, SHEIGHT / 2);
+	pausede->velocity = Vector2(0, 0);
+	pausede->scale = Point(2.2f, 1.0f);
+
+	//dead text
+	dead = new Star();
+	dead->addSprite("assets/ulost.tga");
+	dead->position = Point2(SWIDTH / 2, SHEIGHT / 2);
+	dead->velocity = Vector2(0, 0);
+	dead->scale = Point(2.2f, 1.0f);
+
+	//won text
+	won = new Star();
+	won->addSprite("assets/uwon.tga");
+	won->position = Point2(SWIDTH / 2, SHEIGHT / 2);
+	won->velocity = Vector2(0, 0);
+	won->scale = Point(2.2f, 1.0f);
+
 	//platform
 	myentity = new MyEntity();
 	myentity->position = Point2(SWIDTH / 2, 700);
-	myentity->scale = Point(1.0f, 0.1f);
+	//TEST myentity->scale = Point2(10.0f, 0.2f);
 
 	//mystar
 	mystar = new Star();
 	mystar->hearts = 4;
-	//mystar->velocity = Vector2(0, 0);
-	std::cout << "hearts:" << mystar->hearts << std::endl;
 	
-
 	//lives
 	star1 = new Star();
 	star2 = new Star();
@@ -90,6 +109,7 @@ MyScene::MyScene() : Scene()
 
 	mystar2 = new Star();
 	mystar2->hearts = 1;
+	mystar2->velocity = Vector2(0, 0);
 }
 
 //======================================================================
@@ -98,18 +118,53 @@ MyScene::MyScene() : Scene()
 MyScene::~MyScene()
 {
 	// deconstruct and delete the Tree
+
+	//forloop delete blocks
+	for (auto it = blocks.begin(); it != blocks.end();) {
+		if ((*it)->toErase >= 1) {
+			removeChild(*it);
+			delete(*it);
+			it = blocks.erase(it);
+		}
+		else {
+			++it;
+		}
+
+	}
+	//delete bonuses
+	for (auto it = bonuses.begin(); it != bonuses.end();) {
+		if ((*it)->toErase >= 1) {
+			removeChild(*it);
+			delete(*it);
+			it = bonuses.erase(it);
+		}
+		else {
+			++it;
+		}
+
+	}
+
+	mystar->position = mystar->startPosition;
+
 	this->removeChild(myentity);
 	this->removeChild(mystar);
+	this->removeChild(mystar2);
 	this->removeChild(star1);
 	this->removeChild(star2);
 	this->removeChild(star3);
+	
 
 	// delete myentity & mystar from the heap (there was a 'new' in the constructor)
 	delete myentity;
 	delete mystar;
+	delete mystar2;
 	delete star1;
 	delete star2;
 	delete star3;
+
+	delete won;
+	delete dead;
+	delete pausede;
 }
 
 //======================================================================
@@ -117,22 +172,49 @@ MyScene::~MyScene()
 //======================================================================
 void MyScene::update(float deltaTime)
 {
+	checkAmountBlocks();
+
+	if (blocksSize <= 0) {
+		this->addChild(won);
+		this->paused = true;
+		this->removeChild(mystar);
+	}
+	if (blocksSize >= 1 && gameOver == true) {
+		this->addChild(dead);
+		this->paused = true;
+	}
+
+	//if its crashed to outside go to startpos
+	if (mystar->position.x > SWIDTH + 30 || mystar->position.x < -30 || mystar->position.y > SHEIGHT + 30 || mystar->position.y < -30) {
+		mystar->position = mystar->startPosition;
+	}
 
 	//------------------------------------------------------------------
 	//							ESC == Pauze
 	//------------------------------------------------------------------
-	
 	if (input()->getKeyUp(KeyCode::Escape)) {
 		if (!this->paused) {
 			this->paused = true;
+			this->addChild(pausede);
 		}
 		else {
 			this->paused = false;
+			this->removeChild(pausede);
+		}
+	}
+	if (finishedD == true) {
+		if (!this->paused) {
+			this->paused = true;
+			this->addChild(dead);
+		}
+		else {
+			this->paused = false;
+			this->removeChild(dead);
 		}
 	}
 	if (this->paused) {
 			return;
-		}
+	}
 	
 	//------------------------------------------------------------------
 	//					Rotation color star & platform
@@ -187,6 +269,29 @@ void MyScene::update(float deltaTime)
 	//------------------------------------------------------------------
 	
 	if (AABC(this->mystar, this->myentity)) {
+
+		// in progress
+		int paddleX = this->myentity->position.x;
+		int starX = this->mystar->position.x;
+
+		int deg = paddleX - starX;
+		std::cout << deg << std::endl;
+
+	
+		//
+		//10 tot 170 graden
+		//
+		//
+		//
+		//
+		//
+		//
+
+		//mystar->velocity.x += deg * -1;
+		//mystar->velocity.y -= deg * -0.5;
+		std::cout << mystar->velocity << std::endl;
+
+		
 		this->mystar->turny();
 		mystar->position.y -= 10;
 	}
@@ -207,7 +312,9 @@ void MyScene::update(float deltaTime)
 			for (int c = 0; c < bonuses.size(); c++) {
 				Bonus* bo = bonuses[c];
 				if (b->num == bo->num) {
+					addChild(bo);
 					bo->velocity = Vector2(0, 100);
+
 				}
 			}
 		}
@@ -218,13 +325,13 @@ void MyScene::update(float deltaTime)
 			for (int c = 0; c < bonuses.size(); c++) {
 				Bonus* bo = bonuses[c];
 				if (b->num == bo->num) {
+					addChild(bo);
 					bo->velocity = Vector2(0, 100);
 				}
 			}
 		}
 	}
 
-	
 	//------------------------------------------------------------------
 	//							turn the star
 	//------------------------------------------------------------------
@@ -242,7 +349,7 @@ void MyScene::update(float deltaTime)
 		if (AABD( this->bonuses[i], this->myentity)) {
 			Bonus* meep = this->bonuses[i];
 			if (meep->sprite()->color == RED) {
-				if (mystar->hearts < 3)
+				if (mystar->hearts < 4)
 				{
 					mystar->hearts++;
 				}
@@ -252,13 +359,13 @@ void MyScene::update(float deltaTime)
 			if (meep->sprite()->color == ORANGE) {
 
 				
-				this->myentity->scale = Vector2(2.0f, 0.1f);
+				//this->myentity->scale = Vector2(2.2f, 0.2f);
 				//timer
 				ax.start();
 			}
 			if (meep->sprite()->color == YELLOW) {
 				
-				this->addChild(mystar2);
+				//this->addChild(mystar2);
 				//timer
 				bx.start();
 			}
@@ -278,11 +385,11 @@ void MyScene::update(float deltaTime)
 	}
 	//timers bonus
 	if (ax.seconds() > 5.0f) {	
-		this->myentity->scale = Vector2(1.0f, 0.1f);
+		//this->myentity->scale = Vector2(1.6f, 0.2f);
 		ax.stop();
 	}
 	if (bx.seconds() > 5.0f) {
-		this->removeChild(mystar2);
+		//this->removeChild(mystar2);
 		mystar2->position = mystar2->startPosition;
 		bx.stop();
 	}
@@ -296,10 +403,6 @@ void MyScene::update(float deltaTime)
 		dx.stop();
 	}
 
-
-
-
-
 	//------------------------------------------------------------------
 	//					game paused when u die
 	//------------------------------------------------------------------
@@ -309,19 +412,19 @@ void MyScene::update(float deltaTime)
 			this->removeChild(mystar);
 
 			//GAME OVER	sprite
+			gameOver = true;
 			std::cout << "Game Over" << std::endl;
 	}
-
 	if (mystar->hearts <= 3) {
-		std::cout << "3 LIVES" << std::endl;
+		//std::cout << "3 LIVES" << std::endl;
 		this->removeChild(star3);
 	}
 	if (mystar->hearts <= 2) {
-		std::cout << "2 LIVES" << std::endl;
+		//std::cout << "2 LIVES" << std::endl;
 		this->removeChild(star2);
 	}
 	if (mystar->hearts <= 1) {
-		std::cout << "2 LIVES" << std::endl;
+		//std::cout << "2 LIVES" << std::endl;
 		this->removeChild(star1);
 	}
 	if (mystar->hearts >= 4) {
@@ -333,51 +436,16 @@ void MyScene::update(float deltaTime)
 	if (mystar->hearts >= 2) {
 		this->addChild(star1);
 	}
-		/*if (mystar2->hearts == 0) {
-			this->removeChild(mystar2);
-		}*/
-
-
-	//bonus shit timers enz
-
-	/*if (bb ==1) {
-		bonusTimer.start();
-		if (bonusTimer.seconds() > 3.0f) {
-			this->myentity->scale = Vector2(1.0f, 0.1f);
-		}
-		bonusTimer.stop();
-	}
-	if(bb == 2) {
-		bonusTimer.start();
-		if (bonusTimer.seconds() > 3.0f) {
-			removeChild(mystar2);
-		}
-		bonusTimer.stop();
-	}
-	if (bb == 3) {
-		bonusTimer.start();
-		if (bonusTimer.seconds() > 3.0f) {
-			
-		}
-		bonusTimer.stop();
-	}
-	if (bb == 4) {
-		
-		if (bonusTimer.seconds() > 3.0f) {
-			this->mystar->scale = Point(0.15f, 0.15f);
-		}
-		//bonusTimer.stop();
-		bonusTimer.start();
-		bb = 0;
-	}*/
-
-	
-
 }
 
 //======================================================================
 //|								Functions							   |
 //======================================================================
+
+void MyScene::checkAmountBlocks() {
+	blocksSize = this->blocks.size();
+	//std::cout << /*"Amount Blocks: " +*/ blocksSize << std::endl;
+}
 
 void MyScene::spawnBlocks() {
 	for (int i = 0; i <55; i++) {
@@ -385,7 +453,7 @@ void MyScene::spawnBlocks() {
 			Block* b = new Block();
 			b->sprite()->color = RED;
 			b->position = Point2(SWIDTH / 12 * (1 + i), SHEIGHT / 16 * 1);
-			b->scale = Point(0.7f, 0.2f);
+			b->scale = Point(0.7f, 0.4f);
 			this->addChild(b);
 			blocks.push_back(b);
 
@@ -403,7 +471,7 @@ void MyScene::spawnBlocks() {
 			Block* b = new Block();
 			b->sprite()->color = ORANGE;
 			b->position = Point2(SWIDTH / 12 * (1 + (i-11)), SHEIGHT / 16 * 2);
-			b->scale = Point(0.7f, 0.2f);
+			b->scale = Point(0.7f, 0.4f);
 			this->addChild(b);
 			blocks.push_back(b);
 
@@ -421,7 +489,7 @@ void MyScene::spawnBlocks() {
 			Block* b = new Block();
 			b->sprite()->color = YELLOW;
 			b->position = Point2(SWIDTH / 12 * (1 + (i - 22)), SHEIGHT / 16 * 3);
-			b->scale = Point(0.7f, 0.2f);
+			b->scale = Point(0.7f, 0.4f);
 			this->addChild(b);
 			blocks.push_back(b);
 
@@ -439,7 +507,7 @@ void MyScene::spawnBlocks() {
 			Block* b = new Block();
 			b->sprite()->color = GREEN;
 			b->position = Point2(SWIDTH / 12 * (1 + (i - 33)), SHEIGHT / 16 * 4);
-			b->scale = Point(0.7f, 0.2f);
+			b->scale = Point(0.7f, 0.4f);
 			this->addChild(b);
 			blocks.push_back(b);
 
@@ -457,7 +525,7 @@ void MyScene::spawnBlocks() {
 			Block* b = new Block();
 			b->sprite()->color = BLUE;
 			b->position = Point2(SWIDTH / 12 * (1 + (i - 44)), SHEIGHT / 16 * 5);
-			b->scale = Point(0.7f, 0.2f);
+			b->scale = Point(0.7f, 0.4f);
 			this->addChild(b);
 			blocks.push_back(b);
 
@@ -546,32 +614,32 @@ void MyScene::giveBonus() {
 	//gen random num between 0 and blocks.size
 	
 	std::srand((unsigned)time(nullptr));
-	//for (int i = 0; i < 1; i++) {
-	for (int i = 0; i < 20; i++) {
+	//TEST for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 10; i++) {
 		int size = blocks.size();
-		int r =std::rand() % size; // 45;   
+		int r = std::rand() % size; //TEST 45;   
 
 		Bonus* bs = new Bonus();
 		bs->position = blocks[r]->position;
 		blocks[r]->num = r;
 		bs->num = r;
 		bonuses.push_back(bs);
-		addChild(bs);
+		//TEST addChild(bs);
 
-		int color = std::rand() % 5; //2;
+		int color = std::rand() % 5; //TEST 2;
 		
 		std::cout << color << std::endl;
 		
 		if (color == 0) {
-			bs->sprite()->color = RED;
+			bs->sprite()->color = RED;  //TEST	GREEN
 		}else if (color == 1) {
-			bs->sprite()->color = ORANGE;
+			bs->sprite()->color = ORANGE; //TEST	GREEN
 		}else if (color == 2) {
-			bs->sprite()->color = YELLOW;
+			bs->sprite()->color = RED; //TEST	GREEN
 		}else if (color == 3) {
 			bs->sprite()->color = GREEN;
 		}else if (color == 4) {
-			bs->sprite()->color = BLUE;
+			bs->sprite()->color = BLUE; //TEST	GREEN
 		}
 		
 		//if 2 nums the same

@@ -19,6 +19,14 @@ Star::Star() : Entity()
 
 	this->hearts = 3;
 	this->paused = false;
+
+	this->totalwidth = this->scale.x * this->sprite()->width();
+	this->totalheight = this->scale.y * this->sprite()->width();
+	this->x = this->position.x - (totalwidth / 2);
+	this->y = this->position.y - (totalheight / 2);
+
+	this->r = totalwidth / 2;
+
 }
 
 Star::~Star()
@@ -63,9 +71,23 @@ void Star::bounce() {
 	}
 
 	if(this->position.y > SHEIGHT -15) {
+		
+		
+		
 		this->velocity.y = this->velocity.y * -1;
 		this->position = startPosition;
 		this->hearts-=1;
+	}
+
+	// if its stuck on side
+	if (this->position.x > SWIDTH - 10) {
+		this->position.x -= 10;
+	}
+	if (this->position.y < 10) {
+		this->position.y -= 10;
+	}
+	if (this->position.x < 10) {
+		this->position.x += 10;
 	}
 }
 

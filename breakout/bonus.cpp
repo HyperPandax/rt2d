@@ -21,6 +21,13 @@ Bonus::Bonus() : Entity()
 	this->hearts = 3;*/
 	this->toErase = 0;
 	this->paused = false;
+
+	this->totalwidth = this->scale.x * this->sprite()->width();
+	this->totalheight = this->scale.y * this->sprite()->width();
+	this->x = this->position.x - (totalwidth / 2);
+	this->y = this->position.y - (totalheight / 2);
+
+	this->r = totalwidth / 2;
 }
 
 Bonus::~Bonus()
@@ -55,18 +62,6 @@ void Bonus::update(float deltaTime)
 	
 	this->position += this->velocity * deltaTime;
 
-
-
-
-	//std::cout << this->position << std::endl;
-	/*
-	bounce();
-	//std::cout << velocity << std::endl;
-
-	if (this->hearts == 0) {
-	this->velocity = Vector2(-250.0, -200.0);
-	}*/
-
 }
 
 int Bonus::extraLife(int i) {
@@ -75,6 +70,6 @@ int Bonus::extraLife(int i) {
 }
 
 void Bonus::biggerPlatform(Entity* e) {
-	e->scale = Point(2.0f, 0.1f);
+	e->scale = Point(1.5f, 0.2f);
 }
 
